@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="CQRS\Servants\Commands\CreateServant\" />
+    <Folder Include="CQRS\Servants\Commands\DeleteServant\" />
+    <Folder Include="CQRS\Servants\Commands\UpdateServant\" />
+    <Folder Include="CQRS\Servants\EventHandler\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
