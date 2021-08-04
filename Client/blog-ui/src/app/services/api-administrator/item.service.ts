@@ -68,11 +68,11 @@ export class ItemClient implements IItemClient {
   }
 
   update(id: number, command: UpdateItemCommand): Observable<any> {
-    let url_ = this.baseUrl + `/api/Item/{id}`;
+    let url_ = this.baseUrl + `/api/Item/${id}`;
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
 
-    return this.http.post<ItemDto>(url_, command);
+    return this.http.put<ItemDto>(url_, command);
   }
 
   delete(id: number): Observable<any> {

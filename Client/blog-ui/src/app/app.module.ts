@@ -35,10 +35,11 @@ import { AuthModule } from '@auth0/auth0-angular';
 import { AuthenticationTabGroupComponent } from './client/authentication-tab-group/authentication-tab-group.component';
 import { OtakuRegisterComponent } from './client/otaku-register/otaku-register.component';
 import { DashBoardComponent } from './administrator/dashboard/dashboard.component';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatStepperModule} from '@angular/material/stepper';
-import { DetailDialogComponent } from './administrator/dialog/detail-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatStepperModule } from '@angular/material/stepper';
+import { UpdateItemDialogComponent } from './administrator/dialog/update-item-dialog/update-item-dialog.component';
+import { DetailDialogComponent } from './administrator/dialog/detail-dialog/detail-dialog.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { DetailDialogComponent } from './administrator/dialog/detail-dialog.comp
     AuthenticationTabGroupComponent,
     OtakuRegisterComponent,
     DashBoardComponent,
-    DetailDialogComponent
+    DetailDialogComponent,
+    UpdateItemDialogComponent
   ],
   imports: [
     BrowserModule,

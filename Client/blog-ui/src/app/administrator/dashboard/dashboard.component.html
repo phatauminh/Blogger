@@ -39,11 +39,11 @@
           <mat-icon>menu</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="openDialog(element)">
+          <button mat-menu-item (click)="openDetailDialog(element)">
             <mat-icon>info</mat-icon>
             <span>Detail</span>
           </button>
-          <button mat-menu-item >
+          <button mat-menu-item (click)="openUpdateItemDialog(element)" >
             <mat-icon>mode_edit</mat-icon>
             <span>Edit</span>
           </button>
@@ -73,6 +73,7 @@
     </tr>
 
   </table>
+
   <!-- <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator> -->
 </div>
 

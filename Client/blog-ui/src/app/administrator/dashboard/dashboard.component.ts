@@ -5,7 +5,8 @@ import { ItemsVm, ItemListClient, ItemClient, ItemDto, ItemsInCategoryDto } from
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { DetailDialogComponent } from '../../administrator/dialog/detail-dialog.component'
+import { DetailDialogComponent } from '../../administrator/dialog/detail-dialog/detail-dialog.component'
+import { UpdateItemDialogComponent } from '../../administrator/dialog/update-item-dialog/update-item-dialog.component'
 
 @Component({
   selector: 'app-dashboard',
@@ -43,12 +44,46 @@ export class DashBoardComponent {
     );
   }
 
-  openDialog(item: ItemDto) {
+  openDetailDialog(item: ItemDto) {
     console.log(item)
     this.dialog.open(DetailDialogComponent, {
       data:
       {
         name: item.name
+      }
+    });
+  }
+
+  openUpdateItemDialog(item: ItemDto) {
+    const dialogRef = this.dialog.open(UpdateItemDialogComponent, {
+      data:
+      {
+        id: item.id,
+        name: item.name,
+        imageString: item.imageString
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(updatedItem => {
+      var shouldUpdateItem = false;
+
+      if (updatedItem.name !== item.name) {
+        shouldUpdateItem = true;
+      }
+
+      if (shouldUpdateItem) {
+        if (item.id == 0) {
+          let itemIndex = this.selectedList.indexOf(this.selectedItem);
+          this.selectedList.data.splice(itemIndex, 1);
+        } else {
+          this.itemsClient.update(item.id!, updatedItem).subscribe(
+            (result) => {
+              console.log(result)
+              item.name = updatedItem.name
+            },
+            error => console.error(error)
+          );
+        }
       }
     });
   }
@@ -87,7 +122,6 @@ export class DashBoardComponent {
   }
 
   deleteItem(item: ItemDto) {
-    debugger
     if (item.id == 0) {
       let itemIndex = this.selectedList.indexOf(this.selectedItem);
       this.selectedList.data.splice(itemIndex, 1);
