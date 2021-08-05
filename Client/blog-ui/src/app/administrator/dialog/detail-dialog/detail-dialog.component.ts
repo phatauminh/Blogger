@@ -12,10 +12,6 @@ export class DetailDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<DetailDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DetailData) { }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
 }
 
 

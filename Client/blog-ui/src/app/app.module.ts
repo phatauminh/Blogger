@@ -40,6 +40,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
 import { UpdateItemDialogComponent } from './administrator/dialog/update-item-dialog/update-item-dialog.component';
 import { DetailDialogComponent } from './administrator/dialog/detail-dialog/detail-dialog.component';
+import { DeleteItemDialogComponent } from './administrator/dialog/delete-item-dialog/delete-item-dialog.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { DetailDialogComponent } from './administrator/dialog/detail-dialog/deta
     OtakuRegisterComponent,
     DashBoardComponent,
     DetailDialogComponent,
-    UpdateItemDialogComponent
+    UpdateItemDialogComponent,
+    DeleteItemDialogComponent
   ],
   imports: [
     BrowserModule,

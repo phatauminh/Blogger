@@ -16,6 +16,10 @@
     </mat-card-content>
 </mat-card>
 <mat-dialog-actions align="end">
-    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Update</button>
-    <button mat-button matDialogClose>Cancel</button>
+    <button mat-icon-button [mat-dialog-close]="data" cdkFocusInitial>
+        <mat-icon>edit_note</mat-icon>
+    </button>
+    <button mat-icon-button matDialogClose>
+        <mat-icon>close</mat-icon>
+    </button>
 </mat-dialog-actions>

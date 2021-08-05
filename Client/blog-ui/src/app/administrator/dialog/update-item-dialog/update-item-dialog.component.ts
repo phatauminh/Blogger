@@ -11,10 +11,6 @@ export class UpdateItemDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<UpdateItemDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UpdateItemData) { }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
 }
 
 export interface UpdateItemData {
