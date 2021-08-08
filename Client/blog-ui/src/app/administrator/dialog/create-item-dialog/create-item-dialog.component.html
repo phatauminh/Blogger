@@ -16,8 +16,8 @@
     </mat-card-content>
 </mat-card>
 <mat-dialog-actions align="end">
-    <button mat-icon-button [mat-dialog-close]="data" >
-        <mat-icon>edit_note</mat-icon>
+    <button mat-icon-button [mat-dialog-close]="data" [disabled]="data.name == '' ">
+        <mat-icon>check</mat-icon>
     </button>
     <button mat-icon-button matDialogClose>
         <mat-icon>close</mat-icon>

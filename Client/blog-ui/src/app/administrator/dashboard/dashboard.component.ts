@@ -5,9 +5,11 @@ import { ItemsVm, ItemListClient, ItemClient, ItemDto, ItemsInCategoryDto } from
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { DetailDialogComponent } from '../../administrator/dialog/detail-dialog/detail-dialog.component'
-import { UpdateItemDialogComponent } from '../../administrator/dialog/update-item-dialog/update-item-dialog.component'
-import { DeleteItemDialogComponent } from '../../administrator/dialog/delete-item-dialog/delete-item-dialog.component'
+import { DetailDialogComponent } from '../../administrator/dialog/detail-dialog/detail-dialog.component';
+import { UpdateItemDialogComponent } from '../../administrator/dialog/update-item-dialog/update-item-dialog.component';
+import { DeleteItemDialogComponent } from '../../administrator/dialog/delete-item-dialog/delete-item-dialog.component';
+import { CreateItemDialogComponent } from '../../administrator/dialog/create-item-dialog/create-item-dialog.component';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-dashboard',
@@ -45,8 +47,37 @@ export class DashBoardComponent {
     );
   }
 
+  openCreateItemDialog() {
+    const dialogRef = this.dialog.open(CreateItemDialogComponent, {
+      data:
+      {
+        name: "",
+        categoryId: 3,
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(createdItem => {
+      if (createdItem == "" || createdItem.name == "")
+        return;
+      this.itemsClient.create(createdItem).subscribe(
+        (id) => {
+          if (id != 0) {
+            debugger;
+            var newItem = new ItemDto();
+            newItem.id = id;
+            newItem.name = createdItem.name;
+            newItem.categoryId = createdItem.categoryId;
+
+            this.selectedList.data.push(newItem);
+            this.selectedList.data = [...this.selectedList.data];
+          }
+        },
+        error => console.error(error)
+      );
+    });
+  }
+
   openDetailDialog(item: ItemDto) {
-    console.log(item)
     this.dialog.open(DetailDialogComponent, {
       data:
       {
@@ -104,7 +135,7 @@ export class DashBoardComponent {
     dialogRef.afterClosed().subscribe(comfirmText => {
 
       debugger
-      if(comfirmText != "Confirmed")
+      if (comfirmText != "Confirmed")
         return;
 
       if (item.id == 0) {
@@ -155,4 +186,12 @@ export class DashBoardComponent {
     //   this.selectedList.paginator.firstPage();
     // }
   }
+
+  exportExcel() {
+    const workSheet = XLSX.utils.json_to_sheet(this.selectedList.data, {header:['select', 'id', 'name', 'action']});
+    const workBook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workBook, workSheet, 'SheetName');
+    XLSX.writeFile(workBook, 'filename.xlsx');
+  }
+
 }

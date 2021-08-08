@@ -41,6 +41,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { UpdateItemDialogComponent } from './administrator/dialog/update-item-dialog/update-item-dialog.component';
 import { DetailDialogComponent } from './administrator/dialog/detail-dialog/detail-dialog.component';
 import { DeleteItemDialogComponent } from './administrator/dialog/delete-item-dialog/delete-item-dialog.component';
+import { CreateItemDialogComponent } from './administrator/dialog/create-item-dialog/create-item-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { DeleteItemDialogComponent } from './administrator/dialog/delete-item-di
     DashBoardComponent,
     DetailDialogComponent,
     UpdateItemDialogComponent,
-    DeleteItemDialogComponent
+    DeleteItemDialogComponent,
+    CreateItemDialogComponent
   ],
   imports: [
     BrowserModule,

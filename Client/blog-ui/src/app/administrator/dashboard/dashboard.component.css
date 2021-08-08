@@ -11,11 +11,8 @@ td, th {
     width: 25%;
   }
 
-  .example-card {
-    max-width: 400px;
-  }
-  
-  .example-header-image {
-    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-    background-size: cover;
-  }
+::ng-deep .mat-icon .add{
+    height:48px !important;
+    width:48px !important;
+    font-size:48px !important;
+}
