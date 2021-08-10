@@ -11,8 +11,4 @@ td, th {
     width: 25%;
   }
 
-::ng-deep .mat-icon .add{
-    height:48px !important;
-    width:48px !important;
-    font-size:48px !important;
-}
+.mat-toolbar-row{ justify-content: space-between; }

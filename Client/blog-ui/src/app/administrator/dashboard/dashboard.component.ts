@@ -40,7 +40,7 @@ export class DashBoardComponent {
           this.selectedList.filterPredicate = function (data: any, filter: string): boolean {
             return data.name.toLowerCase().includes(filter);
           };
-          // this.selectedList.paginator = this.paginator;
+          this.selectedList.paginator = this.paginator;
         }
       },
       error => console.error(error)
@@ -154,20 +154,47 @@ export class DashBoardComponent {
     });
   }
 
+  // isAllSelected() {
+  //   debugger
+  //   const numSelected = this.selection.selected.length;
+  //   const numRows = this.selectedList.data.length;
+  //   return numSelected === numRows;
+  // }
+
+  // /** Selects all rows if they are not all selected; otherwise clear selection. */
+  // masterToggle() {
+  //   if (this.isAllSelected()) {
+  //     this.selection.clear();
+  //     return;
+  //   }
+
+  //   this.selection.select(...this.selectedList.data);
+  // }
+
+
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.selectedList.data.length;
-    return numSelected === numRows;
+    return this.selection.selected.length > 0;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.selectRows();
+  }
+  pageChanged(event:any) {
+    this.selection.clear();
+  }
+  selectRows() {
 
-    this.selection.select(...this.selectedList.data);
+    const intIndex = this.selectedList.paginator.pageIndex === 0 ? 0 : (this.selectedList.paginator.pageSize * this.selectedList.paginator.pageIndex);
+    let intPageSize = intIndex + this.selectedList.paginator.pageSize;
+    if (intPageSize > this.selectedList.filteredData.length) {
+      intPageSize = this.selectedList.filteredData.length;
+    }
+    for (let index = intIndex; index < intPageSize; index++) {
+      this.selection.select(this.selectedList.filteredData[index]);
+    }
   }
 
   /** The label for the checkbox on the passed row */
@@ -182,13 +209,13 @@ export class DashBoardComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.selectedList.filter = filterValue.trim().toLowerCase();
 
-    // if (this.selectedList.paginator) {
-    //   this.selectedList.paginator.firstPage();
-    // }
+    if (this.selectedList.paginator) {
+      this.selectedList.paginator.firstPage();
+    }
   }
 
   exportExcel() {
-    const workSheet = XLSX.utils.json_to_sheet(this.selectedList.data, {header:['select', 'id', 'name', 'action']});
+    const workSheet = XLSX.utils.json_to_sheet(this.selectedList.data, {header:['id', 'name', 'action']});
     const workBook: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workBook, workSheet, 'SheetName');
     XLSX.writeFile(workBook, 'filename.xlsx');
