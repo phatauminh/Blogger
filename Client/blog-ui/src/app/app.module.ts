@@ -25,6 +25,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { HomeComponent } from './administrator/home/home.component';
 import { GameComponent } from './administrator/game/game.component';
@@ -42,6 +45,7 @@ import { UpdateItemDialogComponent } from './administrator/dialog/update-item-di
 import { DetailDialogComponent } from './administrator/dialog/detail-dialog/detail-dialog.component';
 import { DeleteItemDialogComponent } from './administrator/dialog/delete-item-dialog/delete-item-dialog.component';
 import { CreateItemDialogComponent } from './administrator/dialog/create-item-dialog/create-item-dialog.component';
+import { AdvancedSearchDialogComponent } from './administrator/dialog/advanced-search-dialog/advanced-search-dialog.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +61,8 @@ import { CreateItemDialogComponent } from './administrator/dialog/create-item-di
     DetailDialogComponent,
     UpdateItemDialogComponent,
     DeleteItemDialogComponent,
-    CreateItemDialogComponent
+    CreateItemDialogComponent,
+    AdvancedSearchDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -88,7 +93,10 @@ import { CreateItemDialogComponent } from './administrator/dialog/create-item-di
     MatCheckboxModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatStepperModule
+    MatStepperModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]

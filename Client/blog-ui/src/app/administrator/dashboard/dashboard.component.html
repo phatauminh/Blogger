@@ -1,10 +1,13 @@
 <mat-form-field appearance="standard">
   <mat-label>Filter</mat-label>
   <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Apple" #input>
+  <button mat-icon-button matSuffix aria-label="search" (click)="openAdvancedSearchDialog()">
+    <mat-icon>manage_search</mat-icon>
+  </button>
 </mat-form-field>
 
 <div class="mat-elevation-z8">
-  <table mat-table [dataSource]="selectedList" >
+  <table mat-table [dataSource]="selectedList">
     <!-- Checkbox Column -->
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef>
@@ -22,9 +25,9 @@
     </ng-container>
 
     <!-- Position Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef> Category </th>
+      <td mat-cell *matCellDef="let element"> {{element.category}} </td>
     </ng-container>
 
     <!-- Name Column -->
@@ -67,18 +70,16 @@
     </tr>
 
   </table>
-  <mat-paginator [pageSizeOptions]="[5, 10, 20,25]"
-        showFirstLastButtons (page)="pageChanged($event)"
-      ></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 20,25]" showFirstLastButtons (page)="pageChanged($event)"></mat-paginator>
 
   <mat-toolbar>
     <mat-toolbar-row>
-        <button mat-icon-button color="primary" (click)="exportExcel()" [disableRipple]="true">
-          <mat-icon style="font-size: 36px;">save_alt</mat-icon>
-        </button>
-        <button mat-icon-button color="primary" (click)="openCreateItemDialog()" [disableRipple]="true">
-          <mat-icon style="font-size: 36px;">add_circle</mat-icon>
-        </button>
+      <button mat-icon-button color="primary" (click)="exportExcel()" [disableRipple]="true">
+        <mat-icon style="font-size: 36px;">save_alt</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="openCreateItemDialog()" [disableRipple]="true">
+        <mat-icon style="font-size: 36px;">add_circle</mat-icon>
+      </button>
     </mat-toolbar-row>
   </mat-toolbar>
 </div>

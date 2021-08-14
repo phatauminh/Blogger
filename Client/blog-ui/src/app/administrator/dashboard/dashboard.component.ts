@@ -9,6 +9,7 @@ import { DetailDialogComponent } from '../../administrator/dialog/detail-dialog/
 import { UpdateItemDialogComponent } from '../../administrator/dialog/update-item-dialog/update-item-dialog.component';
 import { DeleteItemDialogComponent } from '../../administrator/dialog/delete-item-dialog/delete-item-dialog.component';
 import { CreateItemDialogComponent } from '../../administrator/dialog/create-item-dialog/create-item-dialog.component';
+import { AdvancedSearchDialogComponent } from '../../administrator/dialog/advanced-search-dialog/advanced-search-dialog.component';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -24,8 +25,7 @@ export class DashBoardComponent {
   animal: string | any;
   name: string | any;
   selection = new SelectionModel<ItemsInCategoryDto>(true, []);
-
-  displayedColumns: string[] = ['select', 'id', 'name', 'action'];
+  displayedColumns: string[] = ['select', 'category', 'name', 'action'];
 
   @ViewChild(MatPaginator) paginator: MatPaginator | any;
   @ViewChild(MatSort) sort: MatSort | any;
@@ -35,12 +35,24 @@ export class DashBoardComponent {
       result => {
         this.vm = result;
         if (this.vm.listItem.length) {
-          this.selectedList = new MatTableDataSource<ItemsInCategoryDto>(this.vm.listItem[0].items);
+          var allItem: Item[] = [];
+          for (var categoryIndex in this.vm.listItem) {
+            for (var itemIdex in this.vm.listItem[categoryIndex].items) {
+              let item = {} as Item;
+              item.id = this.vm.listItem[categoryIndex].items[itemIdex].id;
+              item.category = this.vm.listItem[categoryIndex].name;
+              item.name = this.vm.listItem[categoryIndex].items[itemIdex].name;
+              item.imageString = this.vm.listItem[categoryIndex].items[itemIdex].imageString;
+              allItem.push(item);
+            }
+          }
+          this.selectedList = new MatTableDataSource<Item>(allItem);
           this.selectedList.sort = this.sort;
           this.selectedList.filterPredicate = function (data: any, filter: string): boolean {
             return data.name.toLowerCase().includes(filter);
           };
           this.selectedList.paginator = this.paginator;
+          allItem = [];
         }
       },
       error => console.error(error)
@@ -133,8 +145,6 @@ export class DashBoardComponent {
     });
 
     dialogRef.afterClosed().subscribe(comfirmText => {
-
-      debugger
       if (comfirmText != "Confirmed")
         return;
 
@@ -154,23 +164,9 @@ export class DashBoardComponent {
     });
   }
 
-  // isAllSelected() {
-  //   debugger
-  //   const numSelected = this.selection.selected.length;
-  //   const numRows = this.selectedList.data.length;
-  //   return numSelected === numRows;
-  // }
-
-  // /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  //   if (this.isAllSelected()) {
-  //     this.selection.clear();
-  //     return;
-  //   }
-
-  //   this.selection.select(...this.selectedList.data);
-  // }
-
+  openAdvancedSearchDialog() {
+    this.dialog.open(AdvancedSearchDialogComponent);
+  }
 
   isAllSelected() {
     return this.selection.selected.length > 0;
@@ -182,7 +178,7 @@ export class DashBoardComponent {
       this.selection.clear() :
       this.selectRows();
   }
-  pageChanged(event:any) {
+  pageChanged(event: any) {
     this.selection.clear();
   }
   selectRows() {
@@ -215,10 +211,16 @@ export class DashBoardComponent {
   }
 
   exportExcel() {
-    const workSheet = XLSX.utils.json_to_sheet(this.selectedList.data, {header:['id', 'name', 'action']});
+    const workSheet = XLSX.utils.json_to_sheet(this.selectedList.data, { header: ['id', 'name', 'action'] });
     const workBook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workBook, workSheet, 'SheetName');
-    XLSX.writeFile(workBook, 'filename.xlsx');
+    XLSX.utils.book_append_sheet(workBook, workSheet, 'Records');
+    XLSX.writeFile(workBook, 'records.xlsx');
   }
+}
 
+export interface Item {
+  id: number,
+  category: string,
+  name: string,
+  imageString: string,
 }
