@@ -25,6 +25,7 @@ export class DashBoardComponent {
   animal: string | any;
   name: string | any;
   selection = new SelectionModel<ItemsInCategoryDto>(true, []);
+
   displayedColumns: string[] = ['select', 'category', 'name', 'action'];
 
   @ViewChild(MatPaginator) paginator: MatPaginator | any;
@@ -35,24 +36,21 @@ export class DashBoardComponent {
       result => {
         this.vm = result;
         if (this.vm.listItem.length) {
-          var allItem: Item[] = [];
+          var allItems: ItemDto[] = [];
+
           for (var categoryIndex in this.vm.listItem) {
             for (var itemIdex in this.vm.listItem[categoryIndex].items) {
-              let item = {} as Item;
-              item.id = this.vm.listItem[categoryIndex].items[itemIdex].id;
-              item.category = this.vm.listItem[categoryIndex].name;
-              item.name = this.vm.listItem[categoryIndex].items[itemIdex].name;
-              item.imageString = this.vm.listItem[categoryIndex].items[itemIdex].imageString;
-              allItem.push(item);
+              allItems.push(this.vm.listItem[categoryIndex].items[itemIdex])
             }
           }
-          this.selectedList = new MatTableDataSource<Item>(allItem);
+
+          this.selectedList = new MatTableDataSource<ItemsInCategoryDto>(allItems);
           this.selectedList.sort = this.sort;
           this.selectedList.filterPredicate = function (data: any, filter: string): boolean {
             return data.name.toLowerCase().includes(filter);
           };
           this.selectedList.paginator = this.paginator;
-          allItem = [];
+          allItems = [];
         }
       },
       error => console.error(error)
@@ -218,9 +216,7 @@ export class DashBoardComponent {
   }
 }
 
-export interface Item {
-  id: number,
-  category: string,
-  name: string,
-  imageString: string,
+export class Category {
+  constructor(public id: number, public name: string) { }
 }
+
