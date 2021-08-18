@@ -1,9 +1,9 @@
 <div class="example-search-dialog" cdkDropListGroup>
     <mat-form-field class="example-chip-list" appearance="fill">
         <mat-label>Filter by Categories</mat-label>
-        <mat-chip-list #chipList aria-label="Fruit selection" cdkDropList [cdkDropListData]="selectCategories"
+        <mat-chip-list #chipList aria-label="Fruit selection" cdkDropList [cdkDropListData]="data.selectedCategories"
             cdkDropListOrientation="horizontal" (cdkDropListDropped)="drop($event)">
-            <mat-chip *ngFor="let category of selectCategories" [selectable]="selectable" [removable]="removable"
+            <mat-chip *ngFor="let category of data.selectedCategories" [selectable]="selectable" [removable]="removable"
                 (removed)="remove(category)" cdkDrag>
                 {{category}}
                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -13,14 +13,14 @@
     </mat-form-field>
 
     <mat-chip-list class="example-chip" cdkDropList cdkDropListOrientation="horizontal"
-        [cdkDropListData]="allCategories" (cdkDropListDropped)="drop($event)">
-        <mat-chip class="example-box" cdkDrag *ngFor="let category of allCategories">
+        [cdkDropListData]="data.allCategories" (cdkDropListDropped)="drop($event)">
+        <mat-chip class="example-box" cdkDrag *ngFor="let category of data.allCategories">
             {{category}}
         </mat-chip>
     </mat-chip-list>
 
     <mat-toolbar-row>
-        <button mat-icon-button>
+        <button mat-icon-button [mat-dialog-close]="data.selectedCategories">
             <mat-icon>check</mat-icon>
         </button>
         <button mat-icon-button matDialogClose>

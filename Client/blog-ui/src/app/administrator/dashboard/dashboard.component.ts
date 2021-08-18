@@ -163,7 +163,26 @@ export class DashBoardComponent {
   }
 
   openAdvancedSearchDialog() {
-    this.dialog.open(AdvancedSearchDialogComponent);
+
+    var selectedCategories: string[] = [];
+    var allCategories: string[] = [];
+
+    this.vm.listItem.forEach((element: any) => {
+      allCategories.push(element.name);
+    });
+
+    const dialogRef = this.dialog.open(AdvancedSearchDialogComponent, {
+      data:
+      {
+        allCategories: allCategories,
+        selectedCategories: selectedCategories
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(selectedCategories => {
+      console.log(selectedCategories)
+    });
+
   }
 
   isAllSelected() {

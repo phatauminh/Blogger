@@ -13,36 +13,22 @@ export class AdvancedSearchDialogComponent {
   selectable = true;
   removable = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  selectCategories: string[] =
-    [
-      'Lemon'
-    ];
-
-  allCategories: string[] = [
-    'Apple',
-    'Banana',
-    'Strawberry',
-    'Orange',
-    'Kiwi',
-    'Cherry'
-  ];
 
   constructor(
     public dialogRef: MatDialogRef<AdvancedSearchDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ListCategoryData) {
+    @Inject(MAT_DIALOG_DATA) public data: ListCategoryData | any) {
   }
 
   remove(category: string): void {
-    const index = this.selectCategories.indexOf(category);
+    const index = this.data.selectedCategories.indexOf(category);
 
     if (index >= 0) {
-      this.selectCategories.splice(index, 1);
-      this.allCategories.push(category);
+      this.data.selectedCategories.splice(index, 1);
+      this.data.allCategories.push(category);
     }
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    debugger
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
