@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ItemsVm, ItemListClient, ItemClient, ItemDto, ItemsInCategoryDto } from '../../services/api-administrator/item.service'
@@ -11,6 +11,7 @@ import { DeleteItemDialogComponent } from '../../administrator/dialog/delete-ite
 import { CreateItemDialogComponent } from '../../administrator/dialog/create-item-dialog/create-item-dialog.component';
 import { AdvancedSearchDialogComponent } from '../../administrator/dialog/advanced-search-dialog/advanced-search-dialog.component';
 import * as XLSX from 'xlsx';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +19,7 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./dashboard.component.css']
 })
 
-export class DashBoardComponent {
+export class DashBoardComponent implements OnInit {
   vm: ItemsVm | any;
   selectedList: ItemsInCategoryDto | any;
   selectedItem: ItemDto | any;
@@ -27,12 +28,18 @@ export class DashBoardComponent {
   selection = new SelectionModel<ItemsInCategoryDto>(true, []);
 
   displayedColumns: string[] = ['select', 'category', 'name', 'action'];
+  _listsClient: ItemListClient
+  selectedCategories: Category[] = []
 
   @ViewChild(MatPaginator) paginator: MatPaginator | any;
   @ViewChild(MatSort) sort: MatSort | any;
 
   constructor(private listsClient: ItemListClient, private itemsClient: ItemClient, public dialog: MatDialog) {
-    listsClient.get().subscribe(
+    this._listsClient = listsClient;
+  }
+
+  ngOnInit(): void {
+    this._listsClient.get().subscribe(
       result => {
         this.vm = result;
         if (this.vm.listItem.length) {
@@ -151,9 +158,7 @@ export class DashBoardComponent {
         this.selectedList.data.splice(itemIndex, 1);
       } else {
         this.itemsClient.delete(item.id as number).subscribe(
-          (result) => {
-            debugger
-            console.log(result)
+          () => {
             this.selectedList.data = this.selectedList.data.filter((t: any) => t.id != item.id);
           },
           error => console.error(error)
@@ -164,11 +169,12 @@ export class DashBoardComponent {
 
   openAdvancedSearchDialog() {
 
-    var selectedCategories: string[] = [];
-    var allCategories: string[] = [];
+    var selectedCategories: Category[] = [];
+    var allCategories: Category[] = [];
+
 
     this.vm.listItem.forEach((element: any) => {
-      allCategories.push(element.name);
+      allCategories.push(new Category(element.id, element.name));
     });
 
     const dialogRef = this.dialog.open(AdvancedSearchDialogComponent, {
@@ -180,9 +186,18 @@ export class DashBoardComponent {
     });
 
     dialogRef.afterClosed().subscribe(selectedCategories => {
-      console.log(selectedCategories)
-    });
+      this.selectedCategories = selectedCategories;
+      var allItems: ItemDto[] = [];
 
+      // this.selectedCategories.forEach((element: any) => {
+      //   for (var itemIdex in this.vm.listItem[element.id].items) {
+      //     allItems.push(this.vm.listItem[element.id].items[itemIdex])
+      //   }
+      // })
+
+      this.selectedList.data = allItems;
+      allItems = [];
+    });
   }
 
   isAllSelected() {
@@ -236,6 +251,12 @@ export class DashBoardComponent {
 }
 
 export class Category {
-  constructor(public id: number, public name: string) { }
+  id: number;
+  name: string;
+
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
+  }
 }
 

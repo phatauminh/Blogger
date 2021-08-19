@@ -41,5 +41,10 @@ export class AdvancedSearchDialogComponent {
 }
 
 export interface ListCategoryData {
-  listCategory: {};
+  listCategory: Category[];
 }
+
+export interface Category {
+  id: number;
+  name: string;
+  }
