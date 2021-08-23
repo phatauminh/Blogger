@@ -11,7 +11,6 @@ import { DeleteItemDialogComponent } from '../../administrator/dialog/delete-ite
 import { CreateItemDialogComponent } from '../../administrator/dialog/create-item-dialog/create-item-dialog.component';
 import { AdvancedSearchDialogComponent } from '../../administrator/dialog/advanced-search-dialog/advanced-search-dialog.component';
 import * as XLSX from 'xlsx';
-import { element } from 'protractor';
 
 @Component({
   selector: 'app-dashboard',
@@ -187,16 +186,28 @@ export class DashBoardComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(selectedCategories => {
       this.selectedCategories = selectedCategories;
-      var allItems: ItemDto[] = [];
 
-      // this.selectedCategories.forEach((element: any) => {
-      //   for (var itemIdex in this.vm.listItem[element.id].items) {
-      //     allItems.push(this.vm.listItem[element.id].items[itemIdex])
-      //   }
-      // })
+      if (this.selectedCategories.length > 0) {
+        var listCategoryId: number[] = [];
 
-      this.selectedList.data = allItems;
-      allItems = [];
+        this.selectedCategories.forEach(category => {
+          listCategoryId.push(category.id);
+        })
+
+        this.itemsClient.get(listCategoryId).subscribe(
+          result => {
+            if (this.vm.listItem.length) {
+              var allItems: ItemDto[] = [];
+              this.vm = result;
+              for (var categoryIndex in this.vm.listItem) {
+                for (var itemIdex in this.vm.listItem[categoryIndex].items) {
+                  allItems.push(this.vm.listItem[categoryIndex].items[itemIdex])
+                }
+              }
+              this.selectedList.data = allItems
+            }
+          });
+      }
     });
   }
 

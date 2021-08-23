@@ -1,7 +1,7 @@
 import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams  } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,7 @@ export class ItemListClient implements IItemListClient {
 }
 
 export interface IItemClient {
+  get(listCategory: number[]): Observable<ItemsVm>;
   create(command: CreateItemCommand): Observable<any>;
   update(id: number, command: UpdateItemCommand): Observable<any>;
   delete(id: number): Observable<any>;
@@ -57,6 +58,21 @@ export class ItemClient implements IItemClient {
   constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
     this.http = http;
     this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+  }
+  get(listCategory: number[]): Observable<ItemsVm> {
+    let url_ = this.baseUrl + "/api/Item/GetItemByListCategory";
+    url_ = url_.replace(/[?&]$/, "");
+    let params = new HttpParams();
+
+    listCategory.forEach((categoryId:number) =>{
+      params = params.append(`ListCategory`, categoryId.toString());
+    })
+
+    return (this.http.get<ItemsVm>(url_, { params: params })).pipe(_observableMergeMap((response_: any) => {
+      let result200: any = null;
+      result200 = ItemsVm.fromJS(response_);
+      return _observableOf(result200);
+    }));
   }
 
   create(command: CreateItemCommand): Observable<any> {
@@ -189,6 +205,8 @@ export class ItemDto {
     return result;
   }
 }
+
+
 
 export interface IItemDto {
   id?: number;

@@ -4,6 +4,7 @@ using Application.CQRS.Items.Commands.CreateItem;
 using Application.CQRS.Items.Commands.DeleteItem;
 using Application.CQRS.Items.Commands.UpdateItem;
 using Application.CQRS.Items.Commands.UpdateItemDetail;
+using Application.CQRS.Items.Queries.GetItemWithCategoryList;
 using Application.CQRS.Items.Queries.GetItemWithPagination;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -14,6 +15,12 @@ namespace WebUi.Controllers
     {
         [HttpGet]
         public async Task<ActionResult<PaginatedList<ItemDto>>> Get([FromQuery] GetItemsWithPaginationQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<ActionResult<ItemsVm>> GetItemByListCategory([FromQuery] GetItemsWithCategoryList query)
         {
             return await Mediator.Send(query);
         }
