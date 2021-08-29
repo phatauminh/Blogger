@@ -28,7 +28,6 @@ namespace Application.CQRS.Items.Queries.GetItemWithCategoryList
 
         public async Task<ItemsVm> Handle(GetItemsWithCategoryList request, CancellationToken cancellationToken)
         {
-
             var items = new ItemsVm
             {
                 ItemsInCategory = await _context.Categories

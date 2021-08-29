@@ -1,7 +1,7 @@
 import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
-import { HttpClient, HttpParams  } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +14,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IItemListClient {
   get(): Observable<ItemsVm>
+  getCategories(): Observable<CategoriesVm>
 }
 
 @Injectable({
@@ -35,6 +36,17 @@ export class ItemListClient implements IItemListClient {
     return (this.http.get<ItemsVm>(url_)).pipe(_observableMergeMap((response_: any) => {
       let result200: any = null;
       result200 = ItemsVm.fromJS(response_);
+      return _observableOf(result200);
+    }));
+  }
+
+  getCategories(): Observable<CategoriesVm> {
+    let url_ = this.baseUrl + "/api/Category/GetCategories";
+    url_ = url_.replace(/[?&]$/, "");
+
+    return (this.http.get<CategoriesVm>(url_)).pipe(_observableMergeMap((response_: any) => {
+      let result200: any = null;
+      result200 = CategoriesVm.fromJS(response_);
       return _observableOf(result200);
     }));
   }
@@ -64,7 +76,7 @@ export class ItemClient implements IItemClient {
     url_ = url_.replace(/[?&]$/, "");
     let params = new HttpParams();
 
-    listCategory.forEach((categoryId:number) =>{
+    listCategory.forEach((categoryId: number) => {
       params = params.append(`ListCategory`, categoryId.toString());
     })
 
@@ -78,9 +90,7 @@ export class ItemClient implements IItemClient {
   create(command: CreateItemCommand): Observable<any> {
     let url_ = this.baseUrl + "/api/Item";
     url_ = url_.replace(/[?&]$/, "");
-    var item = this.http.post<ItemDto>(url_, command);
-
-    return item;
+    return this.http.post<ItemDto>(url_, command);
   }
 
   update(id: number, command: UpdateItemCommand): Observable<any> {
@@ -174,7 +184,7 @@ export interface IItemsInCategoryDto {
   items?: ItemDto[] | undefined;
 }
 
-export class ItemDto {
+export class ItemDto implements IItemDto {
   id?: number;
   categoryId?: number;
   name?: string | undefined;
@@ -206,8 +216,6 @@ export class ItemDto {
   }
 }
 
-
-
 export interface IItemDto {
   id?: number;
   categoryId?: number;
@@ -215,6 +223,74 @@ export interface IItemDto {
   imageString?: string | undefined;
 }
 
+export class CategoryDto implements ICategoryDto {
+  id?: number;
+  name?: string | undefined;
+
+  constructor(data?: CategoryDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.id = _data["id"];
+      this.name = _data["name"];
+    }
+  }
+
+  static fromJS(data: any): CategoryDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new CategoryDto();
+    result.init(data);
+    return result;
+  }
+}
+
+
+export interface ICategoryDto {
+  id?: number;
+  name?: string | undefined;
+}
+
+
+export class CategoriesVm implements ICategoriesVm {
+  categories?: CategoryDto[] | undefined;
+
+  constructor(data?: ICategoriesVm) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      if (Array.isArray(_data["categories"])) {
+        this.categories = [] as any;
+        for (let item of _data["categories"])
+          this.categories!.push(CategoryDto.fromJS(item));
+      }
+    }
+  }
+
+  static fromJS(data: any): CategoriesVm {
+    data = typeof data === 'object' ? data : {};
+    let result = new CategoriesVm();
+    result.init(data);
+    return result;
+  }
+}
+
+export interface ICategoriesVm {
+  categories?: CategoryDto[] | undefined;
+}
 
 export class UpdateItemCommand {
   id?: number;

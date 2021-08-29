@@ -1,6 +1,7 @@
 ﻿using Application.CQRS.Categories.Commands.CreateCategory;
 using Application.CQRS.Categories.Commands.DeleteCategory;
 using Application.CQRS.Categories.Commands.UpdateCategory;
+using Application.CQRS.Categories.Queries.GetCategories;
 using Application.CQRS.Categories.Queries.GetItems;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -13,6 +14,12 @@ namespace WebUi.Controllers
         public async Task<ActionResult<ItemsVm>> Get()
         {
             return await Mediator.Send(new GetItemsQuery());
+        }
+
+        [HttpGet("[action]")]
+        public async Task<ActionResult<CategoriesVm>> GetCategories()
+        {
+            return await Mediator.Send(new GetCategoriesQuery());
         }
 
         [HttpPost]

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { ItemsVm, ItemListClient, ItemClient, ItemDto, ItemsInCategoryDto } from '../../services/api-administrator/item.service'
+import { ItemsVm, ItemListClient, ItemClient, ItemDto, ItemsInCategoryDto } from '../../services/api-administrator/dashboard.service'
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { DeleteItemDialogComponent } from '../../administrator/dialog/delete-ite
 import { CreateItemDialogComponent } from '../../administrator/dialog/create-item-dialog/create-item-dialog.component';
 import { AdvancedSearchDialogComponent } from '../../administrator/dialog/advanced-search-dialog/advanced-search-dialog.component';
 import * as XLSX from 'xlsx';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +31,8 @@ export class DashBoardComponent implements OnInit {
   _listsClient: ItemListClient
   selectedCategories: Category[] = []
 
+  private _destroyed$ = new Subject()
+
   @ViewChild(MatPaginator) paginator: MatPaginator | any;
   @ViewChild(MatSort) sort: MatSort | any;
 
@@ -42,25 +45,25 @@ export class DashBoardComponent implements OnInit {
       result => {
         this.vm = result;
         if (this.vm.listItem.length) {
-          var allItems: ItemDto[] = [];
-
-          for (var categoryIndex in this.vm.listItem) {
-            for (var itemIdex in this.vm.listItem[categoryIndex].items) {
-              allItems.push(this.vm.listItem[categoryIndex].items[itemIdex])
-            }
+          var allItems = this.getItems(result);
+          if (allItems != null) {
+            this.selectedList = new MatTableDataSource<ItemsInCategoryDto>(allItems);
+            this.selectedList.sort = this.sort;
+            this.selectedList.filterPredicate = function (data: any, filter: string): boolean {
+              return data.name.toLowerCase().includes(filter);
+            };
+            this.selectedList.paginator = this.paginator;
+            allItems = [];
           }
-
-          this.selectedList = new MatTableDataSource<ItemsInCategoryDto>(allItems);
-          this.selectedList.sort = this.sort;
-          this.selectedList.filterPredicate = function (data: any, filter: string): boolean {
-            return data.name.toLowerCase().includes(filter);
-          };
-          this.selectedList.paginator = this.paginator;
-          allItems = [];
         }
       },
       error => console.error(error)
     );
+  }
+
+  public ngOnDestroy(): void {
+    this._destroyed$.next();
+    this._destroyed$.complete();
   }
 
   openCreateItemDialog() {
@@ -167,13 +170,15 @@ export class DashBoardComponent implements OnInit {
   }
 
   openAdvancedSearchDialog() {
-
     var selectedCategories: Category[] = [];
     var allCategories: Category[] = [];
 
-
-    this.vm.listItem.forEach((element: any) => {
-      allCategories.push(new Category(element.id, element.name));
+    this.listsClient.getCategories().subscribe(categoriesVm => {
+      categoriesVm?.categories?.forEach(category => {
+        if (categoriesVm) {
+          allCategories.push(new Category(category.id!, category.name!));
+        }
+      })
     });
 
     const dialogRef = this.dialog.open(AdvancedSearchDialogComponent, {
@@ -196,14 +201,8 @@ export class DashBoardComponent implements OnInit {
 
         this.itemsClient.get(listCategoryId).subscribe(
           result => {
-            if (this.vm.listItem.length) {
-              var allItems: ItemDto[] = [];
-              this.vm = result;
-              for (var categoryIndex in this.vm.listItem) {
-                for (var itemIdex in this.vm.listItem[categoryIndex].items) {
-                  allItems.push(this.vm.listItem[categoryIndex].items[itemIdex])
-                }
-              }
+            var allItems = this.getItems(result);
+            if (allItems != null) {
               this.selectedList.data = allItems
             }
           });
@@ -258,6 +257,25 @@ export class DashBoardComponent implements OnInit {
     const workBook: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workBook, workSheet, 'Records');
     XLSX.writeFile(workBook, 'records.xlsx');
+  }
+
+  getItems(result: ItemsVm | any): ItemDto[] | any {
+    this.vm = result;
+    if (this.vm.listItem.length) {
+      var allItems: ItemDto[] = [];
+
+      for (var categoryIndex in this.vm.listItem) {
+        for (var itemIdex in this.vm.listItem[categoryIndex].items) {
+          allItems.push(this.vm.listItem[categoryIndex].items[itemIdex])
+        }
+      }
+
+      if (allItems.length == 0)
+        return null;
+
+      return allItems;
+    }
+    return null;
   }
 }
 
