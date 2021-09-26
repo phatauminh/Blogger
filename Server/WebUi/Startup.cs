@@ -1,14 +1,18 @@
 using Application;
 using Application.Common.Interfaces;
 using FluentValidation.AspNetCore;
+using HealthChecks.UI.Client;
 using Infrastructure;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Linq;
 using WebUi.Filters;
 using WebUi.Services;
@@ -25,6 +29,10 @@ namespace WebUi
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddHealthChecks()
+                .AddCheck("self", () => HealthCheckResult.Healthy());
+
             services.AddApplication();
             services.AddInfrastructure(Configuration);
 
@@ -71,8 +79,6 @@ namespace WebUi
                 app.UseHsts();
             }
 
-            app.UseHealthChecks("/health");
-
             app.UseCors(x => x
                   .AllowAnyOrigin()
                   .AllowAnyMethod()
@@ -96,6 +102,21 @@ namespace WebUi
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
             });
 
             app.UseSpa(spa =>
